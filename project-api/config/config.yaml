@@ -1,0 +1,11 @@
+server:
+  name: "project-api"
+  adds: "127.0.0.1:80"
+
+zap:
+  debugFileName: "D:\\GO_WorkSpace\\src\\ms_project\\logs\\debug\\project-debug.log"
+  infoFileName:  "D:\\GO_WorkSpace\\src\\ms_project\\logs\\info\\project-info.log"
+  warnFileName:  "D:\\GO_WorkSpace\\src\\ms_project\\logs\\error\\project-error.log"
+  maxSize: 500
+  maxAge: 28
+  MaxBackups: 3

@@ -1,0 +1,25 @@
+server:
+  name: "project-user"
+  adds: "127.0.0.1:8080"
+
+zap:
+  debugFileName: "D:\\GO_WorkSpace\\src\\ms_project\\logs\\debug\\project-debug.log"
+  infoFileName:  "D:\\GO_WorkSpace\\src\\ms_project\\logs\\info\\project-info.log"
+  warnFileName:  "D:\\GO_WorkSpace\\src\\ms_project\\logs\\error\\project-error.log"
+  maxSize: 500
+  maxAge: 28
+  MaxBackups: 3
+redis:
+  host: "localhost"
+  port: 6379
+  password: ""
+  db: 0
+grpc:
+  adds: "127.0.0.1:8881"
+  name: "user"
+mysql:
+  username: root
+  password: 1234
+  host: 127.0.0.1
+  port: 3306
+  db: msproject
