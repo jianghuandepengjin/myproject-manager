@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"log"
 	common "test.com/project-common"
+	_const "test.com/project-common/const"
 	"test.com/project-common/errs"
 	"test.com/project-user/internal/dao"
 	"test.com/project-user/internal/data"
@@ -128,7 +129,7 @@ func (ls *LoginService) Register(ctx context.Context, msg *RegisterMessage) (*Re
 		Name:       msg.Name + "各人主族",
 		MemberId:   1,
 		CreateTime: time.Now().UnixMilli(),
-		Personal:   1,
+		Personal:   int32(_const.ONE),
 	}
 	_, err = organizationConn.InsertOrganization(c, organization)
 	if err != nil {
