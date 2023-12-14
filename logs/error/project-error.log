@@ -7,3 +7,4 @@
 {"level":"ERROR","time":"2023-08-27T22:44:00.717+0800","caller":"login.service.v1/login_service.go:43","msg":"success send error log"}
 {"level":"ERROR","time":"2023-08-27T22:50:35.354+0800","caller":"login.service.v1/login_service.go:43","msg":"success send error log"}
 {"level":"ERROR","time":"2023-11-04T20:22:37.183+0800","caller":"login.service.v1/login_service.go:44","msg":"success send error log"}
+{"level":"ERROR","time":"2023-12-13T22:21:07.949+0800","caller":"login.service.v1/login_service.go:87","msg":"Db connect is fial","error":"sql: Scan error on column index 0, name \"count(*)\": destination not a pointer"}

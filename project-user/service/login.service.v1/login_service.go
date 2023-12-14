@@ -7,6 +7,7 @@ import (
 	common "test.com/project-common"
 	"test.com/project-common/errs"
 	"test.com/project-user/internal/dao"
+	"test.com/project-user/internal/data"
 	"test.com/project-user/pkg/model"
 	"test.com/project-user/pkg/repo"
 	"time"
@@ -14,15 +15,17 @@ import (
 
 type LoginService struct {
 	UnimplementedLoginServiceServer
-	cache  repo.Cache
-	member repo.MemberDao
+	cache        repo.Cache
+	member       repo.MemberDao
+	organization repo.Organization
 }
 
 // 这个类似service 层 new dao对象过来使用
 func New() *LoginService {
 	return &LoginService{
-		cache:  dao.Redis,
-		member: dao.NewMeberDao(),
+		cache:        dao.Redis,
+		member:       dao.NewMeberDao(),
+		organization: dao.NewOrganizationDao(),
 	}
 }
 
@@ -63,18 +66,22 @@ func (ls *LoginService) GetCaptcha(ctx context.Context, msg *CaptchaMessage) (*C
 
 func (ls *LoginService) Register(ctx context.Context, msg *RegisterMessage) (*RegisterResponse, error) {
 	c := context.Background()
+	//todo test需要，先注釋了
 	//判断数据是否都存在
 	//判断验证码是否正确-从redis里面取
-	captche, err := ls.cache.Get(c, model.Register_key+msg.Mobile)
-	if err != nil {
-		//todo 这里要分不同的 redis 错误
-		return nil, errs.GrpcError(model.RedisError)
-	}
-	if captche != msg.Captcha {
-		return nil, errs.GrpcError(model.CapchaError)
-	}
+	//captche, err := ls.cache.Get(c, model.Register_key+msg.Mobile)
+	//if err != nil {
+	//	//todo 这里要分不同的 redis 错误
+	//	return nil, errs.GrpcError(model.RedisError)
+	//}
+	//if captche != msg.Captcha {
+	//	return nil, errs.GrpcError(model.CapchaError)
+	//}
+
 	//业务逻辑的校验（邮箱是哦福被注册，账号是否被注册， 手机号是否被注册）
-	exist, err := ls.member.GetEmailFromMember(c, msg.Email)
+	//todo 可优化放到一个函数
+	conn := ls.member
+	exist, err := conn.GetEmailFromMember(c, msg.Email)
 	if err != nil {
 		zap.L().Error("Db connect is fial", zap.Error(err))
 		return nil, errs.GrpcError(model.DbError)
@@ -82,7 +89,7 @@ func (ls *LoginService) Register(ctx context.Context, msg *RegisterMessage) (*Re
 	if exist {
 		return nil, errs.GrpcError(model.EmailOfExistError)
 	}
-	exist, err = ls.member.GetPhoneFromMember(c, msg.Mobile)
+	exist, err = conn.GetPhoneFromMember(c, msg.Mobile)
 	if err != nil {
 		zap.L().Error("Db connect is fial", zap.Error(err))
 		return nil, errs.GrpcError(model.DbError)
@@ -90,7 +97,7 @@ func (ls *LoginService) Register(ctx context.Context, msg *RegisterMessage) (*Re
 	if exist {
 		return nil, errs.GrpcError(model.PhoneOfExistError)
 	}
-	exist, err = ls.member.GetAccountFromMember(c, msg.Name)
+	exist, err = conn.GetAccountFromMember(c, msg.Name)
 	if err != nil {
 		zap.L().Error("Db connect is fial", zap.Error(err))
 		return nil, errs.GrpcError(model.DbError)
@@ -98,7 +105,36 @@ func (ls *LoginService) Register(ctx context.Context, msg *RegisterMessage) (*Re
 	if exist {
 		return nil, errs.GrpcError(model.AccountOfExistError)
 	}
+
 	//然后把数据都存到数据库中
+	userInfo := data.Member{
+		Email:    msg.Email,
+		Name:     msg.Name,
+		Password: msg.Password,
+		Mobile:   msg.Mobile,
+		Status:   1,
+	}
+	//copier.Copy(userInfo, msg)  ---todo 爲什麽問不能成功copy
+	//1、先插入到用户表中
+	_, err = conn.InsertUserTOMember(c, userInfo)
+	if err != nil {
+		return nil, errs.GrpcError(model.InsertOfUserError)
+	}
+
+	//2、然后插入到组织表中
+	coonOforganization := ls.organization
+	organization := data.Organization{
+		Id:         userInfo.Id,
+		Name:       msg.Name + "各人主族",
+		MemberId:   1,
+		CreateTime: time.Now().UnixMilli(),
+		Personal:   1,
+	}
+	_, err = coonOforganization.InsertOrganization(c, organization)
+	if err != nil {
+		return nil, errs.GrpcError(model.InsertOfOrganizationError)
+	}
+
 	//直接返回成功
 	return &RegisterResponse{}, nil
 }
