@@ -122,7 +122,7 @@ func (ls *LoginService) Register(ctx context.Context, msg *RegisterMessage) (*Re
 	}
 
 	//2、然后插入到组织表中
-	connOforganization := ls.organization
+	organizationConn := ls.organization
 	organization := data.Organization{
 		Id:         userInfo.Id,
 		Name:       msg.Name + "各人主族",
@@ -130,7 +130,7 @@ func (ls *LoginService) Register(ctx context.Context, msg *RegisterMessage) (*Re
 		CreateTime: time.Now().UnixMilli(),
 		Personal:   1,
 	}
-	_, err = connOforganization.InsertOrganization(c, organization)
+	_, err = organizationConn.InsertOrganization(c, organization)
 	if err != nil {
 		return nil, errs.GrpcError(model.InsertOfOrganizationError)
 	}
