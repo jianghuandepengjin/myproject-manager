@@ -50,7 +50,7 @@ func (g *GormConn) Session(ctx context.Context) *gorm.DB {
 }
 
 func (g *GormConn) Begin() {
-	g.tx = g.tx.Begin()
+	g.tx = GetDB().Begin()
 }
 
 func (g *GormConn) RollBack() {
