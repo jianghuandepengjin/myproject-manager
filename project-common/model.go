@@ -1,10 +1,11 @@
 package common
 
 type BusinessCode int
+
 type Result struct {
 	Code BusinessCode
 	Msg  string
-	Data any `json:"data"`
+	Data any `json:"datatable"`
 }
 
 // 成功  设计到取名字的地方 都要想到是否需要大写，一般都是需要大写的

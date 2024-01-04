@@ -2,8 +2,9 @@ package dao
 
 import (
 	"context"
-	"test.com/project-user/internal/data"
+	"test.com/project-user/internal/database"
 	"test.com/project-user/internal/database/gorms"
+	"test.com/project-user/internal/datatable"
 )
 
 type OrganizationDao struct {
@@ -16,8 +17,9 @@ func NewOrganizationDao() *OrganizationDao {
 	}
 }
 
-func (o *OrganizationDao) InsertOrganization(ctx context.Context, organization data.Organization) (bool, error) {
-	err := o.Conn.DB.Create(organization).Error
+func (o *OrganizationDao) InsertOrganization(conn database.DbConn, ctx context.Context, organization datatable.Organization) (bool, error) {
+	o.Conn = conn.(*gorms.GormConn)
+	err := o.Conn.Tx(ctx).Create(organization).Error
 	if err != nil {
 		return false, err
 	}

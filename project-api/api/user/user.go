@@ -17,6 +17,7 @@ import (
 type User struct {
 	id int
 }
+
 type HandlerUser struct {
 }
 
@@ -25,11 +26,19 @@ func New() *HandlerUser {
 }
 
 func (h *HandlerUser) getCaptcha(ctx *gin.Context) {
+	//todo 不能没一个api这里都要这样设置把,需要提取
 	result := &common.Result{}
+
 	//接受参数
 	mobile := ctx.PostForm("mobile")
+	if mobile == "" {
+		//todo 把这些常数整理到一个文件里面
+		ctx.JSON(http.StatusOK, result.Fail(401, "请传入有效参数"))
+		return
+	}
 	c, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
+
 	captchaResponse, err := UserClient.GetCaptcha(c, &login.CaptchaMessage{Mobile: mobile})
 	if err != nil {
 		//issue：为什么不放外面，要放里面---如果都没err 不都浪费空间

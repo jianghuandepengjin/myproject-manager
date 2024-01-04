@@ -16,10 +16,12 @@ type RouteUser struct {
 }
 
 func (*RouteUser) Route(r *gin.Engine) {
-	//在同一个包下面，所以不用user.   所以一会只看上面的package的值 不看目录结构
+	//初始化api的具体逻辑
 	h := New()
+
 	//初始化grpc客户端
 	initGrpcUserClient()
+
 	//可以这样直接调用函数很奇怪--这是解决把函数作为参数
 	r.POST("project/login/getCaptcha", h.getCaptcha)
 	r.POST("/project/login/register", h.register)

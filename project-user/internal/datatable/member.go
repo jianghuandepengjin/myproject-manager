@@ -1,4 +1,4 @@
-package data
+package datatable
 
 type Member struct {
 	Id              int64

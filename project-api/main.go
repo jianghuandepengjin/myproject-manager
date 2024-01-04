@@ -10,9 +10,8 @@ import (
 
 func main() {
 	r := gin.Default()
-
 	//路由操作
 	router.InitRoute(r)
-	//优雅的启停操作
+	//优雅地启停操作
 	common.Run(r, config.C.SC.Name, config.C.SC.Adds, nil)
 }

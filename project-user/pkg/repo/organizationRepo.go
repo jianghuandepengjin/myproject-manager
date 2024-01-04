@@ -2,9 +2,10 @@ package repo
 
 import (
 	"context"
-	"test.com/project-user/internal/data"
+	"test.com/project-user/internal/database"
+	"test.com/project-user/internal/datatable"
 )
 
 type Organization interface {
-	InsertOrganization(context.Context, data.Organization) (bool, error)
+	InsertOrganization(database.DbConn, context.Context, datatable.Organization) (bool, error)
 }

@@ -1,4 +1,4 @@
-package data
+package datatable
 
 type Organization struct {
 	Id          int64
